@@ -50,6 +50,7 @@ It does not yet implement a geometry-based layout renderer. The schema and rende
 - `M`, `MX`, and `MR` are rendered as compact measurement boxes with anchor badges above the gate.
 - measurement-producing gates currently recognized for semantic anchors are `M`, `MX`, and `MR`.
 - measurement and detector/observable operators reserve extra horizontal space for their labels so dense timelines do not collide as easily.
+- circuit-top measurement and Stim-style operator labels now share a single theme clearance value so they stay above the wire instead of drifting into gate bodies.
 - `detector` and `observable_include` render inline on the circuit in a Stim-like single-wire box style.
 - detector boxes use `DETECTOR` with a top label such as `D0 = m2*m1`.
 - observable boxes use `OBS_INCLUDE(k)` with a top label such as `L0 *= m7`.

@@ -16,7 +16,7 @@
   observable_width_should_be_reserved: true,
   detector_source: "D0 = m2*m1",
   observable_source: "L0 *= m7",
-  source_label_dy: "0.9em",
+  source_label_dy: "-0.15em",
   failure_hint: "Stim-style operators should reserve enough width for their top source text so labels do not overlap adjacent columns",
 )
 #metadata(expectation) <operator-spacing-expectation>
