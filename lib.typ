@@ -14,6 +14,7 @@
   gate_fill: white,
   noise_fill: rgb("#ffe4d6"),
   note_color: rgb("#4b5563"),
+  top_label_clearance: -0.15em,
   circuit_padding: (top: 1.2em, bottom: 1.2em, left: 0.4em, right: 0.6em),
 ) = {
   let resolved_column_spacing = if column_spacing == auto {
@@ -35,6 +36,7 @@
     gate_fill: gate_fill,
     noise_fill: noise_fill,
     note_color: note_color,
+    top_label_clearance: top_label_clearance,
     circuit_padding: circuit_padding,
   )
 }
@@ -566,6 +568,8 @@
   max-length((minimum,) + widths)
 }
 
+#let top-label-clearance(theme) = theme.top_label_clearance
+
 #let measurement-anchor-badge(anchor, theme) = box(
   inset: (x: 0.18em, y: 0.03em),
   radius: 0.22em,
@@ -577,21 +581,21 @@
 #let measurement-anchor-label(target, theme) = (
   content: measurement-anchor-badge(target.anchor, theme),
   pos: top,
-  dy: 0.55em,
+  dy: top-label-clearance(theme),
 )
 
 #let measurement-gate-labels(target, theme) = {
   let labels = ()
   if target.gate == "MX" {
-    labels.push((content: $X$, pos: top, dy: 0.5em))
+    labels.push((content: $X$, pos: top, dy: top-label-clearance(theme)))
   } else if target.gate == "MR" {
-    labels.push((content: "R", pos: top, dy: 0.5em))
+    labels.push((content: "R", pos: top, dy: top-label-clearance(theme)))
   }
   labels.push((
     content: measurement-anchor-badge(target.anchor, theme),
     pos: top + right,
     dx: -0.3em,
-    dy: 0.1em,
+    dy: top-label-clearance(theme),
   ))
   labels
 }
@@ -672,7 +676,7 @@
     (
       content: text(size: theme.note_font_size - 1pt, fill: theme.note_color)[#entry.source],
       pos: top,
-      dy: 0.9em,
+      dy: top-label-clearance(theme),
     ),
   ),
 )
