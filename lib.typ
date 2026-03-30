@@ -728,6 +728,33 @@
   label: noise-note-entry(note, theme),
 )
 
+#let noise-box-constructor(label, theme, note: none, target: none) = (x: auto, y: auto) => gate(
+  text(size: theme.note_font_size, fill: theme.color)[#label],
+  x: x,
+  y: y,
+  fill: theme.noise_fill,
+  stroke: .6pt + theme.note_color,
+  width: noise-box-width(label, theme),
+  label: noise-note-entry(note, theme),
+  multi: if target == none {
+    none
+  } else {
+    (
+      target: target,
+      num-qubits: 1,
+      wire-count: 1,
+      wire-stroke: auto,
+      label: none,
+      extent: auto,
+      size-all-wires: false,
+      inputs: none,
+      outputs: none,
+      wire-label: (),
+      pass-through: (),
+    )
+  },
+)
+
 #let generic-gate(qubits, label, theme, fill: none) = {
   let sorted = unique-ints(qubits).sorted()
   if sorted.len() == 0 {
@@ -786,6 +813,32 @@
     for (index, group) in spec.groups.enumerate() {
       let note = if index == 0 { spec.note } else { none }
       ops.push(noise-box-gate(group.first(), spec.short_label, theme, note: note))
+    }
+    return ops
+  }
+
+  if spec.policy == "pair" and spec.groups.len() > 0 {
+    let ops = ()
+    for (index, group) in spec.groups.enumerate() {
+      let sorted = group.sorted()
+      let upper = sorted.first()
+      let lower = sorted.last()
+      let note = if index == 0 { spec.note } else { none }
+      ops.push((
+        (
+          qubit: upper,
+          n: lower - upper + 1,
+          supplements: (
+            (lower, noise-box-constructor(spec.short_label, theme)),
+          ),
+          constructor: noise-box-constructor(
+            spec.short_label,
+            theme,
+            note: note,
+            target: lower - upper,
+          ),
+        ),
+      ))
     }
     return ops
   }
