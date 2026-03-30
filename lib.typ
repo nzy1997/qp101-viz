@@ -702,6 +702,32 @@
   stroke: .6pt + theme.note_color,
 )
 
+#let noise-note-entry(note, theme) = {
+  if note == none {
+    return ()
+  }
+  (
+    (
+      content: text(size: theme.note_font_size - 1pt, fill: theme.note_color)[#note],
+      pos: top,
+      dy: top-label-clearance(theme),
+    ),
+  )
+}
+
+#let noise-box-width(label, theme) = reserved-gate-width((
+  estimated-text-width(label, theme.note_font_size, padding: 0.8em),
+), minimum: 1.9em)
+
+#let noise-box-gate(qubit, label, theme, note: none) = tequila.gate(
+  qubit,
+  text(size: theme.note_font_size, fill: theme.color)[#label],
+  fill: theme.noise_fill,
+  stroke: .6pt + theme.note_color,
+  width: noise-box-width(label, theme),
+  label: noise-note-entry(note, theme),
+)
+
 #let generic-gate(qubits, label, theme, fill: none) = {
   let sorted = unique-ints(qubits).sorted()
   if sorted.len() == 0 {
@@ -752,6 +778,26 @@
   ),
 )
 
+#let render-noise-op(op, theme) = {
+  let spec = noise-render-spec(op)
+
+  if spec.policy == "single" and spec.groups.len() > 0 {
+    let ops = ()
+    for (index, group) in spec.groups.enumerate() {
+      let note = if index == 0 { spec.note } else { none }
+      ops.push(noise-box-gate(group.first(), spec.short_label, theme, note: note))
+    }
+    return ops
+  }
+
+  let qubits = noise-target-qubits(op)
+  let gate = generic-gate(qubits, gate-label(op), theme, fill: theme.noise_fill)
+  if gate == none {
+    return ()
+  }
+  (gate,)
+}
+
 #let render-main-op(entry, theme) = {
   if entry.kind == "detector" or entry.kind == "observable_include" {
     return (stim-operator-gate(entry, theme),)
@@ -762,10 +808,7 @@
   let label = gate-label(op)
 
   if kind == "noise" {
-    let qubits = shifted-qubits(qubits-from-refs(op.at("raw_targets", default: ())))
-    let gate = generic-gate(qubits, label, theme, fill: theme.noise_fill)
-    if gate == none { return () }
-    return (gate,)
+    return render-noise-op(op, theme)
   }
 
   let targets = shifted-qubits(op.at("targets", default: ()))
