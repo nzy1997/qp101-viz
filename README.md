@@ -70,6 +70,7 @@ Previously verified locally with `typst 0.14.2` by compiling and querying:
 - `examples/anchor-basic.typ`
 - `checks/repeat-groups.typ`
 - `checks/stim-operator-host-render.typ`
+- local `examples/circuits/` renders such as `steane_x_basis_with_flags.json` and `surface_code_d3_with_flags.json` when those ignored local fixtures are available in the workspace
 - query-based fixtures for:
   - measurement-history structure
   - wire layout and hidden metadata
