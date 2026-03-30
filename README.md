@@ -47,6 +47,8 @@ It does not yet implement a geometry-based layout renderer. The schema and rende
 - `qubit_coords` and `shift_coords` stay available in the JSON model but are intentionally hidden from the timeline view.
 - the main gate track is drawn with Typst's `quill` package, following the same broad rendering model as the `yao-rs/visualization` reference.
 - `R` and `RX` are rendered as lightweight reset boxes.
+- `X_ERROR`, `Z_ERROR`, and `DEPOLARIZE1` render as compact single-qubit noise boxes with short labels such as `XE`, `ZE`, and `D1`, even when one op targets many qubits.
+- `DEPOLARIZE2` renders as a connected two-box noise gate with a single parameter note above the pair.
 - `M`, `MX`, and `MR` are rendered as compact measurement boxes with anchor badges above the gate.
 - measurement-producing gates currently recognized for semantic anchors are `M`, `MX`, and `MR`.
 - measurement and detector/observable operators reserve extra horizontal space for their labels so dense timelines do not collide as easily.
