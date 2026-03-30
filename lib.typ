@@ -276,6 +276,77 @@
   0
 }
 
+#let noise-target-qubits(op) = shifted-qubits(qubits-from-refs(op.at("raw_targets", default: ())))
+
+#let noise-short-label(op) = {
+  let display = op.at("display", default: none)
+  if display != none {
+    let label = display.at("label", default: none)
+    if label != none {
+      return label
+    }
+  }
+
+  let gate = op.at("gate", default: "")
+  if gate == "X_ERROR" {
+    return "XE"
+  }
+  if gate == "Z_ERROR" {
+    return "ZE"
+  }
+  if gate == "DEPOLARIZE1" {
+    return "D1"
+  }
+  if gate == "DEPOLARIZE2" {
+    return "D2"
+  }
+  gate
+}
+
+#let noise-note-label(op) = {
+  let params = op.at("params", default: ())
+  if params.len() == 0 {
+    return none
+  }
+  "p=" + params.map(v => fmt-num(v)).join(", ")
+}
+
+#let noise-policy(op) = {
+  let gate = op.at("gate", default: "")
+  if gate == "X_ERROR" or gate == "Z_ERROR" or gate == "DEPOLARIZE1" {
+    return "single"
+  }
+  if gate == "DEPOLARIZE2" {
+    return "pair"
+  }
+  "fallback"
+}
+
+#let noise-qubit-groups(op) = {
+  let qubits = noise-target-qubits(op)
+  let policy = noise-policy(op)
+
+  if policy == "single" {
+    return qubits.map(q => (q,))
+  }
+  if policy == "pair" and calc.rem(qubits.len(), 2) == 0 {
+    let groups = ()
+    for pair in range(calc.floor(qubits.len() / 2)) {
+      let i = pair * 2
+      groups.push((qubits.at(i), qubits.at(i + 1)))
+    }
+    return groups
+  }
+  ()
+}
+
+#let noise-render-spec(op) = (
+  policy: noise-policy(op),
+  short_label: noise-short-label(op),
+  note: noise-note-label(op),
+  groups: noise-qubit-groups(op),
+)
+
 #let gate-label(op) = {
   let display = op.at("display", default: none)
   if display != none {
